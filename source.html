@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorado Birdwatching Guide | Interactive Field Companion</title>
+    <style>
+        :root {
+            --primary: #3a7d44;
+            --secondary: #254d32;
+            --accent: #d69f7e;
+            --light: #f8f4e3;
+            --dark: #1a1a1a;
+            --highlight: #ffd166;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+        
+        header {
+            background: linear-gradient(rgba(58, 125, 68, 0.9), rgba(37, 77, 50, 0.9)), 
+                        url('http://localhost:3001/output_images/mahnt4mm-5tygqkgy/colorado-mountain-landscape_1280x720.png') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .hero-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: rgba(26, 26, 26, 0.7);
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+        
+        h1 {
+            font-family: 'Georgia', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+            color: var(--highlight);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+        }
+        
+        nav {
+            background-color: var(--secondary);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+        
+        nav li {
+            margin: 0 1rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card h3 {
+            color: var(--secondary);
+            margin-top: 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge-common {
+            background-color: #a3b18a;
+            color: white;
+        }
+        
+        .badge-uncommon {
+            background-color: #588157;
+            color: white;
+        }
+        
+        .badge-rare {
+            background-color: #3a5a40;
+            color: white;
+        }
+        
+        .map-container {
+            height: 500px;
+            background-color: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary);
+            background-color: transparent;
+            color: var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .season-calendar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .season-month {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .season-month h4 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        
+        .bird-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .bird-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .bird-profile {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .bird-image {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .bird-image img {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+            height: 300px;
+        }
+        
+        .bird-details {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .bird-name {
+            color: var(--secondary);
+            margin-top: 0;
+            font-size: 2rem;
+        }
+        
+        .bird-scientific {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .bird-characteristics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .characteristic {
+            background-color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: var(--highlight);
+        }
+        
+        .copyright {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        @media (max-width: 768px) {
+            .season-calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hero-content {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .season-calendar {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+
+<base target="_self">
+
+
+    <header>
+        <div class="hero-content">
+            <h1>Colorado Birdwatching Guide</h1>
+            <p class="subtitle">Your interactive field companion for exploring Colorado's diverse avian wildlife</p>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#trails">Birding Trails</a></li>
+            <li><a href="#birds">Bird Profiles</a></li>
+            <li><a href="#calendar">Seasonal Sightings</a></li>
+            <li><a href="#map">Interactive Map</a></li>
+            <li><a href="#tips">Identification Tips</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <section id="trails">
+            <h2 class="section-title">Top Birding Trails in Colorado</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/cherry-creek-state-park-trail_800x600.png" alt="Cherry Creek State Park" class="card-img">
+                    <div class="card-content">
+                        <h3>Cherry Creek State Park</h3>
+                        <p><strong>Difficulty:</strong> Easy • <strong>Length:</strong> 4.5 miles</p>
+                        <p>Prime location for waterfowl including ducks, geese, and herons. Excellent for beginners with flat terrain and abundant birdlife.</p>
+                        <div>
+                            <span class="badge badge-common">Common Birds</span>
+                            <span class="badge badge-uncommon">Uncommon Birds</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/roxborough-state-park-red-rocks_800x600.png" alt="Roxborough State Park" class="card-img">
+                    <div class="card-content">
+                        <h3>Roxborough State Park</h3>
+                        <p><strong>Difficulty:</strong> Moderate • <strong>Length:</strong> 6.2 miles</p>
+                        <p>Dramatic red rock formations attract eagles, canyon wrens, and peregrine falcons. Best visited at dawn for raptor sightings.</p>
+                        <div>
+                            <span class="badge badge-uncommon">Uncommon Birds</span>
+                            <span class="badge badge-rare">Rare Birds</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/mount-falcon-park-view_800x600.png" alt="Mount Falcon Park" class="card-img">
+                    <div class="card-content">
+                        <h3>Mount Falcon Park</h3>
+                        <p><strong>Difficulty:</strong> Hard • <strong>Length:</strong> 7.8 miles</p>
+                        <p>Foothills transition zone perfect for spotting mountain bluebirds, pygmy owls, and various woodpeckers. Bring binoculars for distant sightings.</p>
+                        <div>
+                            <span class="badge badge-common">Common Birds</span>
+                            <span class="badge badge-uncommon">Uncommon Birds</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="birds">
+            <h2 class="section-title">Featured Bird Profiles</h2>
+            
+            <div class="filter-controls">
+                <button class="filter-btn active" data-filter="all">All Birds</button>
+                <button class="filter-btn" data-filter="common">Common</button>
+                <button class="filter-btn" data-filter="uncommon">Uncommon</button>
+                <button class="filter-btn" data-filter="rare">Rare</button>
+            </div>
+            
+            <div class="bird-profile" data-rarity="common">
+                <div class="bird-image">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/black-capped-chickadee-perched_600x600.png" alt="Black-capped Chickadee">
+                </div>
+                <div class="bird-details">
+                    <h3 class="bird-name">Black-capped Chickadee</h3>
+                    <p class="bird-scientific">Poecile atricapillus</p>
+                    <div class="bird-characteristics">
+                        <span class="characteristic">Size: 5-6 inches</span>
+                        <span class="characteristic">Habitat: Woodlands</span>
+                        <span class="characteristic">Year-round</span>
+                    </div>
+                    <p><strong>Identification:</strong> Black cap and bib, white cheeks, gray back and wings with white edges. Distinctive "chick-a-dee-dee-dee" call.</p>
+                    <p><strong>Behavior:</strong> Acrobatic foragers that hang upside down on branches. Often first to investigate new feeders.</p>
+                    <p><strong>Hotspots:</strong> Found throughout Colorado, especially in wooded areas and suburban parks.</p>
+                </div>
+            </div>
+            
+            <div class="bird-profile" data-rarity="uncommon">
+                <div class="bird-image">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/lazuli-bunting-perched_600x600.png" alt="Lazuli Bunting">
+                </div>
+                <div class="bird-details">
+                    <h3 class="bird-name">Lazuli Bunting</h3>
+                    <p class="bird-scientific">Passerina amoena</p>
+                    <div class="bird-characteristics">
+                        <span class="characteristic">Size: 5.5 inches</span>
+                        <span class="characteristic">Habitat: Brushy areas</span>
+                        <span class="characteristic">Summer</span>
+                    </div>
+                    <p><strong>Identification:</strong> Males have brilliant blue head and back with cinnamon breast. Females are brown with blue tinges on wings.</p>
+                    <p><strong>Behavior:</strong> Sings a lively, jumbled song from exposed perches. Often found near water in brushy habitats.</p>
+                    <p><strong>Hotspots:</strong> Best seen in western Colorado foothills during summer months.</p>
+                </div>
+            </div>
+            
+            <div class="bird-profile" data-rarity="rare">
+                <div class="bird-image">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/brown-capped-rosy-finch_600x600.png" alt="Brown-capped Rosy Finch">
+                </div>
+                <div class="bird-details">
+                    <h3 class="bird-name">Brown-capped Rosy Finch</h3>
+                    <p class="bird-scientific">Leucosticte australis</p>
+                    <div class="bird-characteristics">
+                        <span class="characteristic">Size: 6 inches</span>
+                        <span class="characteristic">Habitat: Alpine</span>
+                        <span class="characteristic">Year-round</span>
+                    </div>
+                    <p><strong>Identification:</strong> Brown body with pink highlights on wings and rump. Dark cap contrasts with pale forehead.</p>
+                    <p><strong>Behavior:</strong> Forages on snowfields for seeds and insects. Forms large flocks in winter.</p>
+                    <p><strong>Hotspots:</strong> High elevation areas like Mount Evans and Rocky Mountain National Park.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="calendar">
+            <h2 class="section-title">Seasonal Bird Sightings</h2>
+            <div class="season-calendar">
+                <div class="season-month">
+                    <h4>Spring (March-May)</h4>
+                    <ul class="bird-list">
+                        <li>Western Tanager</li>
+                        <li>Broad-tailed Hummingbird</li>
+                        <li>Yellow Warbler</li>
+                        <li>White-crowned Sparrow</li>
+                    </ul>
+                </div>
+                <div class="season-month">
+                    <h4>Summer (June-August)</h4>
+                    <ul class="bird-list">
+                        <li>Lazuli Bunting</li>
+                        <li>Black-headed Grosbeak</li>
+                        <li>Calliope Hummingbird</li>
+                        <li>Western Wood-Pewee</li>
+                    </ul>
+                </div>
+                <div class="season-month">
+                    <h4>Fall (September-November)</h4>
+                    <ul class="bird-list">
+                        <li>Sandhill Crane</li>
+                        <li>American Pipit</li>
+                        <li>Dark-eyed Junco</li>
+                        <li>Northern Harrier</li>
+                    </ul>
+                </div>
+                <div class="season-month">
+                    <h4>Winter (December-February)</h4>
+                    <ul class="bird-list">
+                        <li>Rosy Finch</li>
+                        <li>Northern Shrike</li>
+                        <li>Rough-legged Hawk</li>
+                        <li>Evening Grosbeak</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="map">
+            <h2 class="section-title">Interactive Birding Map</h2>
+            <div class="map-container">
+                <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/colorado-birding-hotspots-map_1200x500.png" alt="Colorado Birding Hotspots Map" style="width:100%; height:100%; object-fit:cover;">
+                <div class="map-overlay">
+                    <h4>Birding Hotspots</h4>
+                    <ul>
+                        <li>Cherry Creek State Park</li>
+                        <li>Roxborough State Park</li>
+                        <li>Mount Falcon Park</li>
+                        <li>Brainard Lake</li>
+                        <li>Maroon Bells</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="tips">
+            <h2 class="section-title">Bird Identification Tips</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/birdwatching-binoculars_400x300.png" alt="Using Binoculars" class="card-img">
+                    <div class="card-content">
+                        <h3>Essential Gear</h3>
+                        <p>8x42 binoculars provide ideal magnification and light gathering. A field guide or app helps with quick identification in the field.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/bird-feather-closeup_400x300.png" alt="Feather Patterns" class="card-img">
+                    <div class="card-content">
+                        <h3>Key Features</h3>
+                        <p>Note size/shape, color patterns, wing bars, eye rings, and bill shape. Behavior and habitat are also important clues.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img src="http://localhost:3001/output_images/mahnt4mm-5tygqkgy/birdwatching-notebook_400x300.png" alt="Field Notes" class="card-img">
+                    <div class="card-content">
+                        <h3>Field Notes</h3>
+                        <p>Record date, location, weather, and detailed descriptions. Note distinctive behaviors, calls, and flight patterns.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">Resources</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+        <p class="copyright">© 2025 Colorado Birdwatching Guide. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality for bird profiles
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const birdProfiles = document.querySelectorAll('.bird-profile');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const filterValue = this.getAttribute('data-filter');
+                    
+                    birdProfiles.forEach(profile => {
+                        if (filterValue === 'all' || profile.getAttribute('data-rarity') === filterValue) {
+                            profile.style.display = 'flex';
+                        } else {
+                            profile.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Smooth scrolling for navigation
+            document.querySelectorAll('nav a').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Card hover effect enhancement
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+    </script>
+
+              
+          
+                
+          
+              
